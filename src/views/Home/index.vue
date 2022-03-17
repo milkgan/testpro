@@ -1,7 +1,10 @@
 <template>
     <div class="home-container" ref="container">
         <ul class="carousel-container" :style="{ marginTop }">
-            <li v-for="item in banners" :key="item.id">{{item.id}}{{item.title}}</li>
+            <!-- <li v-for="item in banners" :key="item.id">{{item.id}}{{item.title}}</li> -->
+            <li v-for="item in banners" :key="item.id">
+                <Carouselitem :text="item.id"/>
+            </li>
         </ul>
         <div v-show="index > 0" @click="switchTo(index - 1)" class="icon icon-up">
             <Icon type="arrowUp" />
@@ -22,10 +25,12 @@
 <script>
 import { getBanners } from '@/api/banner'
 import Icon from '@/components/Icon'
+import Carouselitem from './Carouselitem.vue'
 export default {
     name: 'Home',
     components: {
-        Icon
+        Icon,
+        Carouselitem
     },
     data() {
         return {
@@ -49,7 +54,6 @@ export default {
         // 切换轮播图
         switchTo(index) {
             this.index = index;
-            console.log(index)
         }
     }
 
@@ -61,15 +65,18 @@ export default {
 @import '~@/styles/var.less';
 .home-container {
     border: 1px solid red;
-    // width: 100%;
-    width: 600px;
+    width: 100%;
+    // width: 600px;
     height: 100%;
-    height: 400px;
+    // height: 400px;
     position: relative;
+    overflow: hidden;
+    
     ul {
         list-style: none;
         margin: 0;
         padding: 0;
+        transition: 2s;//切换轮播图的过渡时间
     }
     .carousel-container {
         width: 100%;
@@ -78,7 +85,6 @@ export default {
         li {
             width: 100%;
             height: 100%;
-
         }
     }
     .icon {
@@ -88,9 +94,35 @@ export default {
     }
     .icon-up {
         top: 26px;
+        animation: jump-up 2s infinite;
     }
     .icon-down {
         bottom: 26px;
+        animation: jump-down 2s infinite;
+    }
+    // 箭头动画
+    @jump: 6px;
+    @keyframes jump-up {
+        0% {
+            transform: translateY(@jump)
+        }
+        50% {
+            transform: translateY(-@jump)
+        }
+        100% {
+            transform: translateY(@jump)
+        }
+    }
+    @keyframes jump-down {
+        0% {
+            transform: translateY(-@jump)
+        }
+        50% {
+            transform: translateY(@jump)
+        }
+        100% {
+            transform: translateY(-@jump)
+        }
     }
     .indicator {
         .self-center();
@@ -104,7 +136,8 @@ export default {
             margin-top: 8px;
             background-color: #000;
             &.active {
-                background-color: red;
+                // background-color: red;
+                background-color: @gray;
             }
         }
     }
