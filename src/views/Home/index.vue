@@ -1,9 +1,9 @@
 <template>
-    <div class="home-container" ref="container">
-        <ul class="carousel-container" :style="{ marginTop }">
+    <div class="home-container" ref="container" @wheel="handleWheel">
+        <ul class="carousel-container" :style="{ marginTop }" @transitionend="handleTransitionEnd">
             <!-- <li v-for="item in banners" :key="item.id">{{item.id}}{{item.title}}</li> -->
             <li v-for="item in banners" :key="item.id">
-                <Carouselitem :text="item.id"/>
+                <Carouselitem :carousel="item"/>
             </li>
         </ul>
         <div v-show="index > 0" @click="switchTo(index - 1)" class="icon icon-up">
@@ -25,7 +25,7 @@
 <script>
 import { getBanners } from '@/api/banner'
 import Icon from '@/components/Icon'
-import Carouselitem from './Carouselitem.vue'
+import Carouselitem from '@/views/Home/Carouselitem.vue'
 export default {
     name: 'Home',
     components: {
@@ -37,6 +37,7 @@ export default {
             banners: [],
             index: 0, //当前轮播图
             containerHeight: 0, //当前容器高度
+            switching: false, //是否正在切换中
         }
     },
     async created() {
@@ -54,6 +55,25 @@ export default {
         // 切换轮播图
         switchTo(index) {
             this.index = index;
+        },
+        // 触发滚轮
+        handleWheel(e) {
+            if(this.switching) {
+                return;
+            }
+            if(e.deltaY < 0 && this.index > 0) {
+                // 向上滑动
+                this.switching = true;
+                this.index--;
+            }else if(e.deltaY > 0 && this.index < this.banners.length - 1) {
+                // 向下滑动
+                this.switching = true;
+                this.index++;
+            }
+            console.log(e.deltaY)
+        },
+        handleTransitionEnd() {
+            this.switching = false;
         }
     }
 
@@ -64,7 +84,6 @@ export default {
 @import '~@/styles/mixin.less';
 @import '~@/styles/var.less';
 .home-container {
-    border: 1px solid red;
     width: 100%;
     // width: 600px;
     height: 100%;
@@ -80,7 +99,6 @@ export default {
     }
     .carousel-container {
         width: 100%;
-        border: 1px solid #000;
         height: 100%;
         li {
             width: 100%;
@@ -91,6 +109,7 @@ export default {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
+        color: #fff;
     }
     .icon-up {
         top: 26px;
