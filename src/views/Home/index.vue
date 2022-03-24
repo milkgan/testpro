@@ -85,9 +85,7 @@ export default {
 @import '~@/styles/var.less';
 .home-container {
     width: 100%;
-    // width: 600px;
     height: 100%;
-    // height: 400px;
     position: relative;
     overflow: hidden;
     

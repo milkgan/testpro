@@ -1,7 +1,10 @@
 <template>
-    <div class="carousel-item-container" ref="container">
+    <div class="carousel-item-container" ref="container" 
+    @mousemove="handleMouseMove"
+    @mouseleave="handleMouseLeave">
         <div class="carousel-img" ref="image">
-            <ImageLoader 
+            <ImageLoader
+            :style="imgPosition" 
             @load="this.showWords"
             :src="carousel.bigImg" 
             :placeholder="carousel.midImg"/>
@@ -37,13 +40,33 @@ export default {
         this.setSize();
         this.mouseX = this.center.x;
         this.mouseY = this.center.y;
+        // 当改变窗口视图时，实时获取容器和图片的尺寸
+        window.addEventListener("resize", this.setSize);
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.setSize);
     },
     computed: {
-        // 获取到中心坐标
+        // 获取到鼠标相对于容器的中心坐标
         center() {
             return {
                 x: this.containerSize.width / 2,
                 y: this.containerSize.height / 2
+            }
+        },
+        imgPosition() {
+            if(!this.containerSize || !this.innerSize) {
+                return;
+            }
+            // 多出来的宽度和高度
+            const extraWidth = this.innerSize.width - this.containerSize.width;
+            const extraHeight = this.innerSize.height - this.containerSize.height;
+            // 图片偏移量
+            const left = (-extraWidth / this.containerSize.width) * this.mouseX;
+            const top = (-extraHeight / this.containerSize.height) * this.mouseY;
+            return {
+                transform: `translate(${left}px, ${top}px)`,
+                transition: '0.3s'
             }
         }
     },
@@ -66,18 +89,28 @@ export default {
         },
         // 设置尺寸
         setSize() {
+            // 容器尺寸
             this.containerSize = {
                 width: this.$refs.container.clientWidth,
                 height: this.$refs.container.clientHeight,
             }
-            console.log('ccc',this.containerSize)
+            // 图片尺寸
             this.innerSize = {
                 width: this.$refs.image.clientWidth,
                 height: this.$refs.image.clientHeight,
-            }
-            console.log('iii',this.innerSize)
-            
-        }
+            }  
+        },
+        // 获取鼠标在相对于容器中的位置
+        handleMouseMove(e) {
+            let containerPoint = this.$refs.container.getBoundingClientRect();
+            this.mouseX = e.clientX - containerPoint.x;
+            this.mouseY = e.clientY - containerPoint.y;
+        },
+        // 鼠标离开时恢复中心点位置
+        handleMouseLeave() {
+            this.mouseX = this.center.x;
+            this.mouseY = this.center.y;
+        }  
     }
 
 }
@@ -87,26 +120,34 @@ export default {
 @import "~@/styles/var.less";
 @import "~@/styles/mixin.less";
 .carousel-item-container {
-    background-color: @dark;
     width: 100%;
     height: 100%;
     color: #fff;
     position: relative;
+    overflow: hidden;
     .carousel-img {
-        width: 100%;
-        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 110%;
+        height: 110%;
     }
     .title,
     .desc {
         position: absolute;
         top: 50%;
+        left: 30px;
         opacity: 0;
-        font-size: 16px;
+        color: #fff;
+        font-size: 20px;
         white-space: nowrap;
         overflow: hidden;
+        letter-spacing: 3px;
+        text-shadow: 1px 0 0 rgba(255, 136, 0, 0.2), -1px 0 0 rgba(255, 136, 0, 0.2),
+        0 1px 0 rgba(255, 136, 0, 0.2), 0 -1px 0 rgba(255, 136, 0, 0.2);
     }
     .desc {
-        transform: translateY(20px);
+        transform: translateY(60px);
     }
     
 }
