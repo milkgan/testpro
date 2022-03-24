@@ -1,7 +1,6 @@
 <template>
-    <div class="home-container" ref="container" @wheel="handleWheel">
+    <div class="home-container" ref="container" @wheel="handleWheel" v-loading="isLoading">
         <ul class="carousel-container" :style="{ marginTop }" @transitionend="handleTransitionEnd">
-            <!-- <li v-for="item in banners" :key="item.id">{{item.id}}{{item.title}}</li> -->
             <li v-for="item in banners" :key="item.id">
                 <Carouselitem :carousel="item"/>
             </li>
@@ -38,12 +37,16 @@ export default {
             index: 0, //当前轮播图
             containerHeight: 0, //当前容器高度
             switching: false, //是否正在切换中
+            isLoading: true, //是否显示加载图标
         }
     },
     async created() {
+        // (触发一次更新)
         this.banners = await getBanners();
+        this.isLoading = false;
     },
     mounted() {
+        // (触发一次更新)
         this.containerHeight = this.$refs.container.clientHeight;
     },
     computed: {
@@ -70,7 +73,6 @@ export default {
                 this.switching = true;
                 this.index++;
             }
-            console.log(e.deltaY)
         },
         handleTransitionEnd() {
             this.switching = false;
