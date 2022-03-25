@@ -19,6 +19,15 @@ Vue.prototype.$showMessage = showMessage;
 import vLoading from './directives/loading'
 Vue.directive("loading", vLoading)
 
+// 测试
+// import * as blogApi from './api/blog';
+// blogApi.getBlogs(2, 3, 10).then((r) => {
+//   console.log('博客', r)
+// })
+// blogApi.getBlogCategories().then((r) => {
+//   console.log('博客', r)
+// })
+
 
 new Vue({
   router,

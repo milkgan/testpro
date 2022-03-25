@@ -1,21 +1,21 @@
 <template>
     <div class="home-container" ref="container" @wheel="handleWheel" v-loading="isLoading">
         <ul class="carousel-container" :style="{ marginTop }" @transitionend="handleTransitionEnd">
-            <li v-for="item in banners" :key="item.id">
+            <li v-for="item in data" :key="item.id">
                 <Carouselitem :carousel="item"/>
             </li>
         </ul>
         <div v-show="index > 0" @click="switchTo(index - 1)" class="icon icon-up">
             <Icon type="arrowUp" />
         </div>
-        <div v-show="index < banners.length - 1" @click="switchTo(index + 1)" class="icon icon-down">
+        <div v-show="index < data.length - 1" @click="switchTo(index + 1)" class="icon icon-down">
             <Icon type="arrowDown" />
         </div>
         <ul class="indicator">
             <li 
             @click="switchTo(i)" 
             :class="{ active: index == i }"
-            v-for="(item, i) in banners" :key="item.id"></li>
+            v-for="(item, i) in data" :key="item.id"></li>
         </ul>
     </div>
   
@@ -25,25 +25,22 @@
 import { getBanners } from '@/api/banner'
 import Icon from '@/components/Icon'
 import Carouselitem from '@/views/Home/Carouselitem.vue'
+import fetchData from '@/mixins/fetchData'
 export default {
     name: 'Home',
+    mixins: [fetchData([])], // 混入获取远程数据banners，初始值需为一个空数组，否则null会报错
     components: {
         Icon,
         Carouselitem
     },
     data() {
         return {
-            banners: [],
+            // banners: [],
             index: 0, //当前轮播图
             containerHeight: 0, //当前容器高度
             switching: false, //是否正在切换中
-            isLoading: true, //是否显示加载图标
+            // isLoading: true, //是否显示加载图标
         }
-    },
-    async created() {
-        // (触发一次更新)
-        this.banners = await getBanners();
-        this.isLoading = false;
     },
     mounted() {
         // (触发一次更新)
@@ -55,6 +52,10 @@ export default {
         }
     },
     methods: {
+        // 获取远程banners数据
+        async fetchData() {
+            this.data = await getBanners();
+        },
         // 切换轮播图
         switchTo(index) {
             this.index = index;
