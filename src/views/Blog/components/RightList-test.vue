@@ -1,10 +1,11 @@
 <template>
   <div class="test-container">
-    <RightList @select="handleSelect" :list="list"/>
+    <RightList :list="list" @select="handleSelect"/>
   </div>
 </template>
+
 <script>
-import RightList from "./RightList";
+import RightList from "./RightList.vue"
 export default {
   components: {
     RightList,
@@ -16,34 +17,35 @@ export default {
         { name: "b", isSelect: false },
         {
           name: "c",
-          isSelect: true,
+          aside: 'test',
+          isSelect: true, 
           children: [
             { name: "c-1", isSelect: false },
             {
               name: "c-2",
               isSelect: false,
               children: [
-                { name: "c-2-1", isSelect: false },
-                { name: "c-2-2", isSelect: false },
-                { name: "c-2-3", isSelect: false },
-                { name: "c-2-4", isSelect: false },
-              ],
+                {name: "c-2-1", isSelect: false},
+                {name: "c-2-2", isSelect: false},
+                {name: "c-2-3", isSelect: false},
+                {name: "c-2-4", isSelect: false},
+              ]
             },
-            { name: "c-3", isSelect: false },
-            { name: "c-4", isSelect: false },
+            {name: "c-2-3", isSelect: false},
+            {name: "c-2-4", isSelect: false},
           ],
         },
         { name: "d", isSelect: false },
       ],
-    };
+    }
   },
   methods: {
-      handleSelect(item) {
-          console.log(item);
-      }
+    handleSelect(item) {
+      console.log(item);
+    }
   }
 };
 </script>
 
-<style scoped>
+<style>
 </style>
